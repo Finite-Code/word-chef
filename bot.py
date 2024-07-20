@@ -2,11 +2,10 @@ import os
 import requests
 import json
 
-# Set up Twitter API credentials
+# Set up Twitter API credentials for OAuth 2.0 User Context
 BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 
 def get_random_word():
-    # Example endpoint; you might need a different method for random words
     response = requests.get("https://api.dictionaryapi.dev/api/v2/entries/en_US/hello")
     word_data = response.json()
     word = word_data[0]['word']
