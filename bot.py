@@ -1,13 +1,10 @@
 import os
-import tweepy
 import requests
+import json
 
 # Set up Twitter API credentials
-auth = tweepy.OAuthHandler(os.getenv("TWITTER_CONSUMER_KEY"), os.getenv("TWITTER_CONSUMER_SECRET"))
-auth.set_access_token(os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_TOKEN_SECRET"))
-api = tweepy.API(auth)
+BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 
-# Get a random word and its details
 def get_random_word():
     # Example endpoint; you might need a different method for random words
     response = requests.get("https://api.dictionaryapi.dev/api/v2/entries/en_US/hello")
@@ -27,7 +24,22 @@ def tweet_word():
     word = get_random_word()
     definition = get_word_details(word)
     tweet_text = f"Word: {word}\nMeaning: {definition}\nExample Usage: [Example usage here]"
-    api.update_status(tweet_text)
+
+    url = "https://api.twitter.com/2/tweets"
+    headers = {
+        "Authorization": f"Bearer {BEARER_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = json.dumps({
+        "text": tweet_text
+    })
+
+    response = requests.post(url, headers=headers, data=payload)
+
+    if response.status_code == 201:
+        print(f"Successfully tweeted: {tweet_text}")
+    else:
+        print(f"Error occurred: {response.status_code} - {response.text}")
 
 if __name__ == "__main__":
     tweet_word()
