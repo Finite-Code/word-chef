@@ -9,14 +9,19 @@ api = tweepy.API(auth)
 
 # Get a random word and its details
 def get_random_word():
-    response = requests.get("https://api.wordnik.com/v4/words.json/randomWord", params={"api_key": os.getenv("WORDNIK_API_KEY")})
-    word = response.json()["word"]
+    # Example endpoint; you might need a different method for random words
+    response = requests.get("https://api.dictionaryapi.dev/api/v2/entries/en_US/hello")
+    word_data = response.json()
+    word = word_data[0]['word']
     return word
 
 def get_word_details(word):
-    response = requests.get(f"https://api.wordnik.com/v4/word.json/{word}/definitions", params={"api_key": os.getenv("WORDNIK_API_KEY")})
-    definitions = response.json()
-    return definitions[0]['text'] if definitions else "No definition found."
+    response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en_US/{word}")
+    details = response.json()
+    if 'meanings' in details:
+        meaning = details['meanings'][0]['definitions'][0]['definition']
+        return meaning
+    return "No definition found."
 
 def tweet_word():
     word = get_random_word()
